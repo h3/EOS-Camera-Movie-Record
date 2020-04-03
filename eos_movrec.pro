@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += qt
 QT = core \
-	gui
+	widgets
 HEADERS = mainwnd.h \
 	about.h \
 	blinklabel.h \

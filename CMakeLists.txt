@@ -1,6 +1,14 @@
+cmake_minimum_required(VERSION 2.6.2)
+
 project(eos-movrec)
 
-cmake_minimum_required(VERSION 2.6.2)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+if(CMAKE_VERSION VERSION_LESS "3.7.0")
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+endif()
 
 include(FindPkgConfig)
 include(CheckIncludeFile)
@@ -14,7 +22,6 @@ set(PACKAGE				${PROJECT_NAME})
 
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-
 #check mingw
 if(WIN32)
 	if(MINGW)
@@ -24,8 +31,7 @@ if(WIN32)
 	endif(MINGW)
 endif(WIN32)
 
-find_package(Qt4 4.4.2 COMPONENTS QtCore QtGui REQUIRED)
-include(${QT_USE_FILE})
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 add_definitions (${QT_DEFINITIONS})
 include_directories (${QT_INCLUDES} ${CMAKE_BINARY_DIR})
@@ -86,7 +92,7 @@ set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -DAF_DEBUG_LOG")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
 
 add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGE_FILES=1)
-QT4_WRAP_CPP(MOC_SRCS ${eos_movrec_MOC_HEADERS})
+QT5_WRAP_CPP(MOC_SRCS ${eos_movrec_MOC_HEADERS})
 
 if (WIN32)
 	set(CMAKE_RC_COMPILER windres)
@@ -104,8 +110,11 @@ endif(WIN32)
 
 add_executable(eos_movrec ${eos_movrec_SRCS} ${MOC_SRCS})
 if (WIN32)
-	TARGET_LINK_LIBRARIES(eos_movrec ${QT_LIBRARIES} ${EDSDK_LDFLAGS})
+	TARGET_LINK_LIBRARIES(eos_movrec ${EDSDK_LDFLAGS})
 elseif(UNIX)
-	TARGET_LINK_LIBRARIES(eos_movrec ${QT_LIBRARIES} ${LIBGPHOTO2_LDFLAGS})
+	TARGET_LINK_LIBRARIES(eos_movrec ${LIBGPHOTO2_LDFLAGS})
 endif(WIN32)
+
+qt5_use_modules (eos_movrec Core Widgets)
+
 install(TARGETS eos_movrec RUNTIME DESTINATION bin)
